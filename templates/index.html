@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <title>Simple Blog</title>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="mt-5">Create a New Post</h1>
+
+    <form method="post">
+        <div class="mb-3">
+            <label for="user" class="form-label">User</label>
+            <input type="text" class="form-control" id="user" name="user" required>
+        </div>
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+   
+<h2 class="mt-5">Posts</h2>
+<ul>
+    {% for post in posts %}
+        <li>
+            {{ post[1] }} by {{ post[2] }}: {{ post[3] }}
+            <!-- Delete link -->
+            <a href="{{ url_for('delete_post', post_id=post[0]) }}" class="btn btn-danger btn-sm">Delete</a>
+        </li>
+    {% endfor %}
+</ul>
+
+
+<!-- Optional JavaScript; choose one of the two! -->
+
+<!-- Option 1: Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
