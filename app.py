@@ -1,26 +1,12 @@
-import sqlite3
 from flask import Flask, render_template, request, redirect, url_for
+from database import init_db  # Import the init_db function from database.py
+import sqlite3
 
 # Initialize Flask app
 app = Flask(__name__)
 
-# Set up the database
-def init_db():
-    with app.app_context():
-        db = sqlite3.connect('database.db')
-        cursor = db.cursor()
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS posts (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user TEXT,
-                title TEXT,
-                description TEXT
-            )
-        ''')
-        db.commit()
-
 # Initialize the database
-init_db()
+init_db(app)
 
 @app.route("/", methods=['GET', 'POST'])
 def index():

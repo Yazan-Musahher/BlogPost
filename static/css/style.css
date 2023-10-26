@@ -3,3 +3,19 @@
     padding: 0;
     box-sizing: border-box;
 }
+
+
+body {
+    background-color: #121212;
+}
+
+
+.mt-5 {
+    color: white;
+}
+
+.form-label{
+    color: white;
+}
+
+
