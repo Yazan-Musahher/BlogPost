@@ -33,17 +33,21 @@
     </form>
 
    
-<h2 class="mt-5">Posts</h2>
-<ul>
-    {% for post in posts %}
-        <li>
-            {{ post[1] }} by {{ post[2]|safe }}: {{ post[3]|safe }}
-            <!-- Delete link -->
-            <a href="{{ url_for('delete_post', post_id=post[0]) }}" class="btn btn-danger btn-sm">Delete</a>
-        </li>
-    {% endfor %}
-</ul>
+    <h2 class="mt-5">Posts</h2>
+    <div>
+        {% for post in posts %}
+            <div class="card mt-5">
+                <div class="card-body">
+                    <h5 class="card-subtitle mb-2 text-muted">User: {{ post[1]|safe }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Title: {{ post[2]|safe }}</h6>
+                    <p class="card-subtitle mb-2 text-muted">Description: {{ post[3]|safe }}</p>
+                    <a href="{{ url_for('delete_post', post_id=post[0]) }}" class="btn btn-danger btn-sm">Delete</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 
+</div>
 
 
 <!-- Option 1: Bootstrap Bundle with Popper -->
