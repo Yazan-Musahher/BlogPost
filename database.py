@@ -1,21 +1,34 @@
 import sqlite3
 
-def init_db(app):  # Accept the app object as an argument
-    with app.app_context():  # Use the app object here instead of current_app
+
+def init_db(app):
+    with app.app_context():
         db = sqlite3.connect('database.db')
         cursor = db.cursor()
-        
-        # Create the table if it doesn't exist
+
+        # Create a table for users if it doesn't exist
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                email TEXT NOT NULL UNIQUE,
+                password TEXT NOT NULL
+            );
+        ''')
+
+        # Create a table for posts if it doesn't exist with a foreign key that references the user's id.
+        # Ensure the 'user_id' column matches the 'id' column in the 'users' table as specified by the foreign key.
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS posts (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user TEXT,
+                user_id INTEGER,
                 title TEXT,
-                description TEXT
-            )
+                description TEXT,
+                FOREIGN KEY(user_id) REFERENCES users(id)
+            );
         ''')
-        
-        # Delete all old posts
-        cursor.execute('DELETE FROM posts')
-        
+
+        # Optionally, clear out old data for a fresh start. Comment these out for production use.
+        cursor.execute('DELETE FROM posts;')  # Deletes all existing posts.
+        cursor.execute('DELETE FROM users;')  # Deletes all existing users.
+
         db.commit()

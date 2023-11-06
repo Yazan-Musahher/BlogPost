@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+
+    <title>Main Page</title>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="mt-5">Create a New Post</h1>
+
+    <form method="post">
+        <div class="mb-3">
+            <label for="user" class="form-label">User</label>
+            <input type="text" class="form-control" id="user" name="user" required>
+        </div>
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+   
+    <h2 class="mt-5">Posts</h2>
+    <div>
+        {% for post in posts %}
+            <div class="card mt-5">
+                <div class="card-body">
+                    <h5 class="card-subtitle mb-2 text-muted">User: {{ post[1]|safe }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Title: {{ post[2]|safe }}</h6>
+                    <p class="card-subtitle mb-2 text-muted">Description: {{ post[3]|safe }}</p>
+                    <a href="{{ url_for('delete_post', post_id=post[0]) }}" class="btn btn-danger btn-sm">Delete</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+
+<!-- Option 1: Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
