@@ -1,0 +1,54 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+body {
+    background-color: #121212;
+}
+
+
+.mt-5 {
+    color: white;
+}
+
+.form-label{
+    color: white;
+}
+
+
+/* Navbar custom styles if needed */
+.navbar {
+    border-bottom: 2px solid #dc3545; /* Adds a red border at the bottom of the navbar */
+}
+
+.navbar-brand, .nav-link {
+    color: white; /* Ensures that the navbar text is white */
+}
+
+.navbar-text {
+    margin-right: 10px; /* Adds spacing to the right of the email display */
+}
+
+.btn-outline-danger {
+    border-color: white; /* Makes the logout button border white */
+}
+
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-outline-success {
+    border-color: white; /* Makes the login button border white */
+}
+
+.btn-outline-success:hover {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+
+

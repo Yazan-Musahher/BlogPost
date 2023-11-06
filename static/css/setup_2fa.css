@@ -4,18 +4,17 @@
     box-sizing: border-box;
 }
 
-
 body {
     background-color: #121212;
 }
 
 
-.mt-5 {
-    color: white;
+.container {
+    text-align: center;
 }
-
-.form-label{
-    color: white;
+img {
+    margin-bottom: 20px;
 }
-
-
+h1 {
+    margin-bottom: 10px;
+}

@@ -15,7 +15,11 @@ body {
 }
 
 .form-label{
-    color: white;
+    color: black;
 }
 
+
+.form-group{
+    margin-top: 5px;
+}
 

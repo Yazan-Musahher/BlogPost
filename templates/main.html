@@ -7,12 +7,34 @@
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 
     <title>Main Page</title>
 </head>
 <body>
 
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Blog Post</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        {% if session['email'] %}
+                            <span class="navbar-text">
+                                Logged in as: <span class="font-italic">{{ session['email'] }}</span>
+                            </span>
+                            <a href="{{ url_for('logout') }}" class="btn btn-outline-danger ml-2">Logout</a>
+                        {% else %}
+                            <a href="{{ url_for('login') }}" class="btn btn-outline-success">Login</a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 <div class="container">
     <h1 class="mt-5">Create a New Post</h1>
 
