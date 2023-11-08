@@ -1,6 +1,7 @@
 import base64
 import io
 from flask import Flask, render_template, request, redirect, send_file, url_for, session, flash
+from datetime import datetime, timedelta
 import sqlite3
 import qrcode
 import pyotp
@@ -16,25 +17,44 @@ app.secret_key = 'z4gbFxEngf'  # Please dont store the key in Production
 @app.route("/", methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+        # Retrieve the login attempt count and time from the session
+        login_attempts = session.get('login_attempts', 0)
+        attempt_time = session.get('attempt_time')
+        
+        # If attempt_time is present and is offset-aware, convert it to offset-naive
+        if attempt_time and attempt_time.tzinfo is not None:
+            attempt_time = attempt_time.replace(tzinfo=None)
+        
+        # Compare with current time (offset-naive)
+        current_time = datetime.now()
+
+        # Check if the user has exceeded the attempt limit and if the time limit has not passed
+        if login_attempts >= 3 and attempt_time and current_time < attempt_time + timedelta(minutes=1):
+            flash('For mange mislykkede forsøk, prøv igjen om ett minutt.', 'error')
+            return render_template('index.html')
+        
         email = request.form['email']
         password = request.form['password']
-        user_totp = request.form['totp']
+        
         with sqlite3.connect('database.db') as db:
             cursor = db.cursor()
             cursor.execute("SELECT id, password, totp_secret FROM users WHERE email = ?", (email,))
             user = cursor.fetchone()
-            if user and check_password_hash(user[1], password) and pyotp.TOTP(user[2]).verify(user_totp):
-                session['user_id'] = user[0]  # Store user id in session
-                session['email'] = email  # Store email in session
-                flash('You are logged in!', 'success')
-                return redirect(url_for('main'))
-            else:
-                flash('Invalid credentials or TOTP', 'error')
-                return render_template('index.html')
-    else:
-        return render_template('index.html')
-    
 
+        if user and check_password_hash(user[1], password):
+            # ... your code for successful login ...
+            # Reset the attempt count on successful login
+            session.pop('login_attempts', None)
+            session.pop('attempt_time', None)
+            return redirect(url_for('main'))
+        else:
+            session['login_attempts'] = login_attempts + 1
+            session['attempt_time'] = datetime.now().replace(tzinfo=None)
+            flash('Invalid credentials or TOTP', 'error')
+            # Since this is an error case, we render the template again with the error message
+            return render_template('index.html')
+        
+    return render_template('index.html')
 @app.route("/main", methods=['GET', 'POST'])
 def main():
     if 'email' not in session:
@@ -119,7 +139,7 @@ def setup_2fa():
         totp_uri = pyotp.totp.TOTP(totp_secret).provisioning_uri(name=email, issuer_name="Google Authenticator")
         qr_img = qrcode.make(totp_uri)
         buf = io.BytesIO()
-        qr_img.save(buf, format="PNG")
+        qr_img.save(buf)  # Removed the format="PNG" argument
         buf.seek(0)
         data = base64.b64encode(buf.read()).decode('ascii')
 
