@@ -7,11 +7,16 @@ import qrcode
 import pyotp
 from database import init_db
 from werkzeug.security import generate_password_hash, check_password_hash
+from oauth import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_AUTHORIZE_URL, GOOGLE_TOKEN_URL, GOOGLE_USERINFO_URL
+from urllib.parse import urlencode
+import requests
+
 
 
 # Initialize Flask app
 app = Flask(__name__)
 app.secret_key = 'z4gbFxEngf'  # Please dont store the key in Production
+
 
 
 @app.route("/", methods=['GET', 'POST'])
@@ -32,6 +37,10 @@ def login():
         if login_attempts >= 3 and attempt_time and current_time < attempt_time + timedelta(minutes=1):
             flash('For mange mislykkede forsøk, prøv igjen om ett minutt.', 'error')
             return render_template('index.html')
+            
+              # Check if the user has successfully authenticated with Google OAuth2
+        if 'access_token' in session:
+            return redirect(url_for('main'))
         
         email = request.form['email']
         password = request.form['password']
@@ -55,6 +64,58 @@ def login():
             return render_template('index.html')
         
     return render_template('index.html')
+
+@app.route("/google-callback")
+def google_callback():
+    # Check if the state matches
+    if request.args.get('state') != session['oauth_state']:
+        flash('State mismatch. Potential CSRF attack.', 'error')
+        return redirect(url_for('login'))
+
+    # Exchange authorization code for access token
+    code = request.args.get('code')
+    token_response = requests.post(GOOGLE_TOKEN_URL, data={
+        'code': code,
+        'client_id': GOOGLE_CLIENT_ID,
+        'client_secret': GOOGLE_CLIENT_SECRET,
+        'redirect_uri': url_for('google_callback', _external=True),
+        'grant_type': 'authorization_code'
+    })
+    token_json = token_response.json()
+    access_token = token_json['access_token']
+
+    # Fetch the user's profile information
+    userinfo_response = requests.get(GOOGLE_USERINFO_URL, headers={
+        'Authorization': f'Bearer {access_token}'
+    })
+    user_info = userinfo_response.json()
+
+    # Store the user information in session and redirect to main
+    session['email'] = user_info['email']
+    session['access_token'] = access_token  # Storing access token in session (optional)
+    
+    # Redirect to the main page
+    return redirect(url_for('main'))
+
+@app.route("/google-login")
+def google_login():
+    # Generate a unique state value and store it in the session
+    state = 'your_unique_state'
+    session['oauth_state'] = state
+
+    # Redirect the user to Google's authorization endpoint
+    redirect_uri = url_for('google_callback', _external=True)
+    params = {
+        'client_id': GOOGLE_CLIENT_ID,
+        'response_type': 'code',
+        'scope': 'openid profile email',  # Adjust the scope as needed
+        'redirect_uri': redirect_uri,
+        'state': state,
+    }
+    auth_url = f"{GOOGLE_AUTHORIZE_URL}?{urlencode(params)}"
+    return redirect(auth_url)
+
+
 @app.route("/main", methods=['GET', 'POST'])
 def main():
     if 'email' not in session:
@@ -157,7 +218,7 @@ def delete_post(post_id):
 
 @app.route("/logout")
 def logout():
-    session.pop('email', None)
+    session.clear()
     return redirect(url_for('login'))
 # Initialize the database
 # Assuming init_db(app) initializes the database as per your provided structure
