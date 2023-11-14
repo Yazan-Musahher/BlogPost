@@ -108,7 +108,7 @@ def google_login():
     params = {
         'client_id': GOOGLE_CLIENT_ID,
         'response_type': 'code',
-        'scope': 'openid profile email',  # Adjust the scope as needed
+        'scope': 'openid profile email',
         'redirect_uri': redirect_uri,
         'state': state,
     }
@@ -200,7 +200,7 @@ def setup_2fa():
         totp_uri = pyotp.totp.TOTP(totp_secret).provisioning_uri(name=email, issuer_name="Google Authenticator")
         qr_img = qrcode.make(totp_uri)
         buf = io.BytesIO()
-        qr_img.save(buf)  # Removed the format="PNG" argument
+        qr_img.save(buf) 
         buf.seek(0)
         data = base64.b64encode(buf.read()).decode('ascii')
 
@@ -220,8 +220,6 @@ def delete_post(post_id):
 def logout():
     session.clear()
     return redirect(url_for('login'))
-# Initialize the database
-# Assuming init_db(app) initializes the database as per your provided structure
 init_db(app)
 
 if __name__ == "__main__":
